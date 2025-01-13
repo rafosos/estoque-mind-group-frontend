@@ -1,8 +1,9 @@
+import * as SecureStore from "expo-secure-store";
 import axios from "axios";
+import { Platform } from "react-native";
+import { useToast } from "react-native-toast-notifications";
 
 const API_URL = 'http://192.168.0.18:3000'; //casa
-
-// const token = useSession().session;
 
 export const axiosInstance = axios.create({
     baseURL: API_URL,
@@ -11,8 +12,25 @@ export const axiosInstance = axios.create({
     }
 });
 
+axiosInstance.interceptors.request.use(async function (config){
+    let token = '';
+    if(Platform.OS === 'web')
+        token = localStorage.getItem('session') || '';
+    else
+        token = await SecureStore.getItemAsync("session") || "";
+    
+    config.headers['Authorization'] = "Bearer " + token;
+    return config;
+});
+
+axiosInstance.interceptors.response.use((config) => config, (error) => {
+    const toast = useToast();
+    toast.show(error, {type: "error"});
+    return error
+})
+
 const get = <T extends unknown>(endpoint: string, params: any = {}) => 
-    axiosInstance.get<T>(endpoint, {params})
+    axiosInstance.get<T>(endpoint, {params});
 
 const post = <T extends unknown>(endpoint: string, params: any = {}) => 
     axiosInstance.post<T>(API_URL + endpoint, params)

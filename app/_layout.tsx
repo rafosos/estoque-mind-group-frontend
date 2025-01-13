@@ -35,7 +35,7 @@ export default function RootLayout() {
   return (
     <ToastProvider>
       <SessionProvider>
-        <Stack screenOptions={{contentStyle: styles.AndroidSafeArea}}>
+        <Stack>
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
           <Stack.Screen name="login" options={{ headerShown: false }} />
           <Stack.Screen name="cadastro" options={{ headerShown: false }} />
@@ -45,11 +45,3 @@ export default function RootLayout() {
     </ToastProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  AndroidSafeArea: {
-    flex: 1,
-    backgroundColor: colors.cinza.background,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
-  }
-});

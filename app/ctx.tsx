@@ -1,6 +1,5 @@
 import React from "react";
 import { useStorageState } from "@/hooks/useStorageState";
-import { axiosInstance } from "@/services/service_base";
 
 const AuthContext = React.createContext<{
     signIn: (token:string, nome: string) => void;
@@ -28,12 +27,10 @@ export function SessionProvider(props: React.PropsWithChildren) {
             value={{
                 signIn: (token: string, nome:string) => {
                     setSession(token);
-                    axiosInstance.defaults.headers.common = {"Authorization": `Bearer ${token}`};
                     setNome(nome);
                 },
                 signOut: () => {
                     setSession(null);
-                    axiosInstance.defaults.headers.common = {};
                     setNome(null);
                 },
                 nome,

@@ -1,4 +1,4 @@
-import { UserEdit } from "@/classes/user";
+import { User, UserEdit } from "@/classes/user";
 import { patch } from "./service_base";
 
 export default function UserService(){
@@ -8,4 +8,11 @@ export default function UserService(){
         const promise = patch<UserEdit>(prefix + "/", fieldsToUpdate);
         return promise.then(res => res.data);
     }
+    
+    const getUser = () => {    
+        const promise = patch<User>(prefix + "/");
+        return promise.then(res => res.data);
+    }
+
+    return {editUser, getUser}
 }
