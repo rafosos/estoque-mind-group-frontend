@@ -1,8 +1,3 @@
-/**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
- */
-
 const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
 
@@ -24,3 +19,50 @@ export const Colors = {
     tabIconSelected: tintColorDark,
   },
 };
+
+
+export const colors = {
+  gradiente: {
+    verdeClaro: "#3EBA52",
+    verdeEscuro: '#00821E',
+    cinzaClaro: '#757575',
+    cinzaEscuro: '#494949',
+  },
+  dourado:{
+    padrao: '#daa520'
+  },
+  verde:{
+    padrao: '#3EBA52'
+  },
+  vermelho:{
+    padrao: "#d50000",
+    erro: '#ff0000'
+  },
+  preto: {
+    padrao: "#000",
+    fade: {
+      1: "rgba(0,0,0,0.1)",
+      2: "rgba(0,0,0,0.2)",
+      3: "rgba(0,0,0,0.3)",
+      4: "rgba(0,0,0,0.4)",
+      5: "rgba(0,0,0,0.5)",
+      6: "rgba(0,0,0,0.6)",
+      7: "rgba(0,0,0,0.7)",
+      8: "rgba(0,0,0,0.8)",
+      9: "rgba(0,0,0,0.9)"
+    }
+  },
+  cinza :{
+    background: "#494949",
+    claro: "#aaa",
+    medio: "#ccc",
+    medio2: '#757575',
+    escuro: "#444",
+  },
+  branco: {
+    padrao: "#fff"
+  },
+  roxo:{
+    uva: "#841584"
+  }
+}
