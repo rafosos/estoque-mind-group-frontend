@@ -1,5 +1,6 @@
 import { Stack } from "expo-router";
-import { SessionProvider } from "./ctx";
+import React from "react";
+import { SessionProvider, useSession } from "./ctx";
 import { useFonts,
   Inter_100Thin,
   Inter_200ExtraLight,
@@ -20,6 +21,7 @@ export const unstable_settings = {
 }
 
 export default function RootLayout() {
+  const {session} = useSession();
   const [loaded] = useFonts({
     Inter_100Thin,
     Inter_200ExtraLight,
@@ -35,11 +37,16 @@ export default function RootLayout() {
   return (
     <ToastProvider>
       <SessionProvider>
-        <Stack>
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="login" options={{ headerShown: false }} />
-          <Stack.Screen name="cadastro" options={{ headerShown: false }} />
-          <Stack.Screen name="+not-found" />
+        <Stack screenOptions={{headerShown: false}}>
+          {session?
+            <Stack.Screen name="(auth)" />
+            :
+            <>
+            <Stack.Screen name="login" />
+            <Stack.Screen name="cadastro" />
+            <Stack.Screen name="+not-found" />
+            </>
+          }
         </Stack>
       </SessionProvider>
     </ToastProvider>

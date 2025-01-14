@@ -23,11 +23,11 @@ axiosInstance.interceptors.request.use(async function (config){
     return config;
 });
 
-axiosInstance.interceptors.response.use((config) => config, (error) => {
-    const toast = useToast();
-    toast.show(error, {type: "error"});
-    return error
-})
+// axiosInstance.interceptors.response.use((config) => config, (error) => {
+//     const toast = useToast();
+//     toast.show(error, {type: "error"});
+//     return Promise.reject(error)
+// })
 
 const get = <T extends unknown>(endpoint: string, params: any = {}) => 
     axiosInstance.get<T>(endpoint, {params});
