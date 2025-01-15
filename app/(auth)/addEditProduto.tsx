@@ -1,7 +1,6 @@
 import StyledText from "@/components/styled/StyledText";
-import { useRef, useState } from "react";
-import { ActivityIndicator, ImageBackground, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
-import * as ImagePicker from 'expo-image-picker';
+import { useEffect, useRef, useState } from "react";
+import { ActivityIndicator, ImageBackground, Modal, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
 import StyledTextInput from "@/components/styled/StyledTextInput";
 import { colors } from "@/constants/Colors";
 import { fonts } from "@/constants/Fonts";
@@ -9,33 +8,74 @@ import ProdutoService from "@/services/produto_service";
 import { useToast } from "react-native-toast-notifications";
 import { errorHandlerDebug } from "@/services/service_base";
 import ErroInput from "@/components/ErroInput";
+import * as ImagePicker from 'expo-image-picker';
+import { router, useLocalSearchParams } from "expo-router";
+import { arrayBufferToBase64 } from "@/utils/arrayBufferToBase64";
+import { Ionicons, Octicons } from "@expo/vector-icons";
+import OverflowLoading from "@/components/overflowLoading";
+import ModalConfirmacao from "@/components/ModalConfirmacao";
 
 export default function AddProduto(){
-    const [imagem, setImagem] = useState<string>();
+    const {id} = useLocalSearchParams();
+
+    const [imagem, setImagem] = useState<string | null>();
+    const [flagImagemAtualizada, setFlagImagemAtualizada] = useState<boolean>(false);
     const [nome, setNome] = useState<string>();
     const [descricao, setDescricao] = useState<string>();
     const [valor, setValor] = useState<string>("0");
     const [quantidade, setQuantidade] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
     const [erros, setErros] = useState<any>({});
-
+    const [modalDeletar, setModalDeletar] = useState<boolean>(false);
+    
     const produtoService = ProdutoService();
     const toast = useToast();
-
     const descricaoRef = useRef<TextInput>(null);
-    
-    const pickImage = async () => {
+
+    useEffect(() => {
+        if(!id) return;
+        getProduto();
+    }, [id]);
+
+    const getProduto = () => {
+        setLoading(true);
+        produtoService.getProduto(Number(id))
+            .then(res => {
+                setNome(res.nome);
+                setDescricao(res.descricao);
+
+                if(res.valor)
+                    setValor(res.valor.toString());
+
+                if(res.quantidade)
+                setQuantidade(res.quantidade);
+
+                if(res.imagem){
+                    setImagem(arrayBufferToBase64(res.imagem.data));
+                }
+            })
+            .catch(err => errorHandlerDebug(err))
+            .finally(() => setLoading(false));
+    }
+
+    const pickImage = async (setImagem: (uri: string) => void) => {
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ['images'],
             allowsEditing: true,
             aspect: [1, 1],
-            quality: 1,
+            quality: 0.5,
         });
         
-        if (!result.canceled) {            
+        if (!result.canceled) {
+            setFlagImagemAtualizada(true);           
             setImagem(result.assets[0].uri);
         }
     };
+
+    const limparEFechar = () => {
+        limparState();
+        router.back();
+    }
 
     const limparState = () => {
         setImagem(undefined);
@@ -46,22 +86,38 @@ export default function AddProduto(){
         setLoading(false);
     }
 
-    const adicionarProduto = () => {
+    const submit = () => {
         setLoading(true);
-
 
         if (!nome){
             setErros({nome: true});
-            return
+            return;
         }
             
-        produtoService.adicionarProduto(nome, descricao, Number(valor.replace(",", ".")), quantidade, imagem)
+        if(id){
+            let produtoEditado = {
+                nome, 
+                descricao, 
+                valor: Number(valor.replace(",", ".")), 
+                quantidade, 
+                imagem: flagImagemAtualizada ? imagem : null
+            }
+            produtoService.editarProduto(Number(id), produtoEditado)
+                .then(res => {
+                    toast.show("Produto editado com sucesso.", {type: 'success'});
+                    limparEFechar();
+                })
+                .catch(err => errorHandlerDebug(err))
+                .finally(() => setLoading(false));
+        }else{
+            produtoService.adicionarProduto(nome, descricao, Number(valor.replace(",", ".")), quantidade, imagem)
             .then(res => {
                 toast.show("Produto adicionado com sucesso.", {type: 'success'});
-                limparState();
+                limparEFechar();
             })
             .catch(err => errorHandlerDebug(err))
             .finally(() => setLoading(false));
+        }
     }
 
     const botaoAdicionarDisabled = () =>
@@ -82,18 +138,49 @@ export default function AddProduto(){
         else setValor(txt);
     }
 
+    const apagarProduto = () => {
+        setLoading(true);
+        produtoService.deletarProduto(Number(id))
+            .then(res => limparEFechar())
+            .catch(err => errorHandlerDebug(err))
+            .finally(() => setLoading(false));
+    }
+
     return(
         <View style={styles.container}>
-            <StyledText style={styles.header}>Novo produto</StyledText>
+            
+            <OverflowLoading loading={loading}/>
 
-            <TouchableOpacity style={styles.moldura} onPress={pickImage}>
+            <ModalConfirmacao 
+                show={modalDeletar}
+                titulo="Deseja realmente deletar o produto?"
+                mensagem="Esta ação não poderá ser desfeita."
+                onCancel={() => setModalDeletar(false)}
+                onConfirm={apagarProduto}
+            />
+
+            <View style={styles.headerContainer}>
+                <View style={styles.tituloVoltarHeader}>
+                    <Ionicons 
+                        name="arrow-back" 
+                        size={28} 
+                        color={colors.preto.padrao}
+                        onPress={() => router.back()} 
+                        />
+                    <StyledText style={styles.header}>Produto</StyledText>
+                </View>
+
+                {id && <Octicons name="trash" size={24} color={colors.preto.padrao} onPress={() => setModalDeletar(true)}/>}
+            </View>
+
+            <TouchableOpacity style={styles.moldura} onPress={() => pickImage(setImagem)}>
                 {imagem ? <ImageBackground source={{uri: imagem}} resizeMode={'cover'} style={styles.imagem}/>
                 : <StyledText style={styles.txtFoto}>Clique para adicionar foto</StyledText>
-                }
+            }
             </TouchableOpacity>
 
             <View style={styles.containerInfo}>
-                <StyledText style={styles.tituloInfo}>Nome*</StyledText>
+                <StyledText style={styles.tituloInfo}>Nome</StyledText>
                 <StyledTextInput 
                     style={styles.info}
                     value={nome}
@@ -153,15 +240,15 @@ export default function AddProduto(){
                 </View>    
             </View>
 
-            <TouchableOpacity onPress={adicionarProduto} disabled={botaoAdicionarDisabled()} style={[styles.botaoSalvar, botaoAdicionarDisabled() && {backgroundColor: colors.cinza.medio2}]}>
+            <TouchableOpacity onPress={submit} disabled={botaoAdicionarDisabled()} style={[styles.botaoSalvar, botaoAdicionarDisabled() && {backgroundColor: colors.cinza.medio2}]}>
                 {loading?
                 <ActivityIndicator size={'small'} color={colors.cinza.escuro}/> :
-                <StyledText style={styles.txtBotaoSalvar}>ADICIONAR</StyledText>
+                <StyledText style={styles.txtBotaoSalvar}>{id ? "SALVAR" : "ADICIONAR"}</StyledText>
                 }
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={limparState} disabled={loading} style={styles.botaoLimpar}>
-                <StyledText style={styles.txtBotaoLimpar}>LIMPAR CAMPOS</StyledText>
+            <TouchableOpacity onPress={id ? limparEFechar : limparState} disabled={loading} style={styles.botaoLimpar}>
+                <StyledText style={styles.txtBotaoLimpar}>{id ? "CANCELAR" : "LIMPAR CAMPOS"}</StyledText>
             </TouchableOpacity>
         </View>
     )
@@ -171,16 +258,26 @@ const styles = StyleSheet.create({
     container:{
         paddingHorizontal:10
     },
+    headerContainer:{
+        flexDirection: 'row',
+        marginVertical: 15,
+        alignItems: 'center',
+        justifyContent: 'space-between' 
+    },
+    tituloVoltarHeader:{
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
     header:{
         fontSize: 22,
         fontFamily: fonts.padrao.SemiBold600,
-        marginVertical:15 
+        marginLeft: 15
     },
     moldura:{
         alignSelf: "center",
         height: 150,
         width: 150,
-        borderRadius: 100,
+        borderRadius: 15,
         backgroundColor: colors.cinza.medio,
         justifyContent: 'center',
         overflow: 'hidden'

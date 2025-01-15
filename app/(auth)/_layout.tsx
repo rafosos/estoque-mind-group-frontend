@@ -24,6 +24,18 @@ export default function AppLayout() {
                         "backgroundColor": colors.cinza.background
                         }
                 }} 
+                />
+            <Stack.Screen
+                name="addEditProduto"
+                options={{ 
+                    headerShown: false
+                }} 
+            />
+            <Stack.Screen
+                name="addMovimento"
+                options={{ 
+                    headerShown: false
+                }} 
             />
         </Stack>
     )

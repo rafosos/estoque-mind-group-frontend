@@ -35,8 +35,8 @@ const get = <T extends unknown>(endpoint: string, params: any = {}) =>
 const post = <T extends unknown>(endpoint: string, params: any = {}, config: AxiosRequestConfig<any> = {}) => 
     axiosInstance.post<T>(API_URL + endpoint, params, config);
 
-const put = <T extends unknown>(endpoint: string, params: any = {}) => 
-    axiosInstance.put<T>(API_URL + endpoint, params);
+const put = <T extends unknown>(endpoint: string, params: any = {}, config: AxiosRequestConfig<any> = {}) => 
+    axiosInstance.put<T>(API_URL + endpoint, params, config);
 
 const deletar = <T extends unknown>(endpoint: string, params: any = {}) => 
     axiosInstance.delete<T>(API_URL + endpoint, {params});

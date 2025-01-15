@@ -5,77 +5,93 @@ import StyledText from "@/components/styled/StyledText";
 import ProdutoService from "@/services/produto_service";
 import { errorHandlerDebug } from "@/services/service_base";
 import { useEffect, useState } from "react";
-import { FlatList, Image, RefreshControl, StyleSheet, View } from "react-native";
+import { ActivityIndicator, FlatList, Image, RefreshControl, StyleSheet, TouchableOpacity, View } from "react-native";
 import { colors } from '@/constants/Colors';
 import { fonts } from '@/constants/Fonts';
-import { Link } from 'expo-router';
+import { Link, router, useNavigation } from 'expo-router';
 import { AntDesign } from '@expo/vector-icons';
+import { arrayBufferToBase64 } from '@/utils/arrayBufferToBase64';
 
 export default function Index(){
     const {nome} = useSession();
     const [refreshing, setRefreshing] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [produtos, setProdutos] = useState<Produto[]>([]);
+    const navigation = useNavigation();
 
     const produtoService = ProdutoService();
 
     useEffect(() => {
+        setLoading(true);
         getProdutos()
+            .finally(() => setLoading(false));
     },[]);
 
-    const getProdutos = () => {
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+          refresh();
+        });
+    
+        return unsubscribe;
+      }, [navigation]);
+
+    const refresh = () => {
         setRefreshing(true);
-        produtoService.getAll()
+        getProdutos();
+    }
+
+    const getProdutos = async () => {
+        return await produtoService.getAll()
             .then(res => setProdutos(res))
             .catch(err => errorHandlerDebug(err))
             .finally(() => setRefreshing(false));
     }
-
-    const arrayBufferToBase64 = (buffer: any) => {
-        let binary = '';
-        let bytes = new Uint8Array(buffer);
-        let len = bytes.byteLength;
-        for (let i = 0; i < len; i++) {
-          binary += String.fromCharCode(bytes[i]);
-        }
-        return window.btoa(binary);
-      };
     
     return (    
         <FlatList 
             contentContainerStyle={styles.container}
-            columnWrapperStyle={styles.columnWrapper}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getProdutos}/>}
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh}/>}
             data={produtos}
             numColumns={2}
             ListHeaderComponent={<>
-                <StyledText style={styles.greetings}>Olá, {nome}</StyledText>
+                <View style={styles.header}>
+                    <StyledText style={styles.greetings}>Olá, {nome}</StyledText> 
+                    <AntDesign 
+                        onPress={() => router.push('/(auth)/addEditProduto')} 
+                        name="plussquare" 
+                        size={25} 
+                        color={colors.cinza.escuro} 
+                    />
+                </View>
                 <StyledText style={styles.seusProdutos}>Seus produtos:</StyledText>
             </>}
-            ListHeaderComponentStyle={styles.containerHeader}
             renderItem={({item}) => 
-                    <View style={styles.containerCardProduto}>
-
-                <View style={styles.cardProduto}>
-                    <Image 
-                        source={item.imagem ?
-                            {uri: 'data:image/jpeg;base64,' + arrayBufferToBase64(item.imagem.data)}
-                            : require('@/assets/images/default-product-img.png')
-                        } 
-                        resizeMode="cover" 
-                        style={styles.imagemCard}
-                    />
-                    <StyledText style={styles.nomeProduto}>{item.nome}</StyledText>
-                    <StyledText style={styles.qtdProduto}>Em estoque: {item.quantidade}</StyledText>
-                    <StyledText numberOfLines={2} style={styles.descricaoProduto}>{item.descricao}</StyledText>
-                            </View>
-                </View>
+                <TouchableOpacity onPress={() => router.push(`/(auth)/addEditProduto?id=${item.id}`)} style={styles.containerCardProduto}>
+                    <View style={styles.cardProduto}>
+                        <Image 
+                            source={item.imagem ?
+                                {uri: arrayBufferToBase64(item.imagem.data)}
+                                : require('@/assets/images/default-product-img.png')
+                            } 
+                            resizeMode="cover" 
+                            style={styles.imagemCard}
+                        />
+                        <StyledText style={styles.nomeProduto}>{item.nome}</StyledText>
+                        <StyledText style={styles.qtdProduto}>Em estoque: {item.quantidade}</StyledText>
+                        <StyledText numberOfLines={2} style={styles.descricaoProduto}>{item.descricao}</StyledText>
+                    </View>
+                </TouchableOpacity>
             }
-            ListEmptyComponent={
+            ListEmptyComponent={loading ? 
+                <ActivityIndicator size={"large"} color={colors.cinza.escuro}/>
+                :
                 <View style={styles.listEmptyContainer}>
-                    <Link href="/(auth)/(tabs)/add_produto" style={styles.txtListEmpty}>
+                    <TouchableOpacity onPress={() => router.push("/(auth)/addEditProduto")}>
+                        <StyledText style={styles.txtListEmpty}>
                         Parece que você não tem produtos cadastrados ainda... Você pode cadastrar um agora clicando aqui!
                         {"\n\n"}<AntDesign name="plussquare" size={28} color={colors.cinza.escuro} />
-                    </Link>
+                        </StyledText>
+                    </TouchableOpacity>
                 </View>
             }
         />
@@ -87,15 +103,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         paddingVertical: 20,
         gap: 10,
-        flex: 1
     },
-    containerHeader:{
-    },
-    columnWrapper:{
-        // gap:20
+    header:{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
     },
     greetings:{
         fontSize: 25,
+        flex:1,
         fontFamily: fonts.padrao.SemiBold600
     },
     seusProdutos:{

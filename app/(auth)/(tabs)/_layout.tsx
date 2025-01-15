@@ -1,5 +1,5 @@
 import { colors } from "@/constants/Colors";
-import { AntDesign, FontAwesome5, Fontisto } from "@expo/vector-icons";
+import { FontAwesome5, Fontisto } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
 export default function TabLayout(){
@@ -17,9 +17,9 @@ export default function TabLayout(){
                 }}  
             />
             <Tabs.Screen
-                name="add_produto"
+                name="movimento"
                 options={{
-                    tabBarIcon: ({focused}) => <AntDesign name="plussquare" size={28} color={focused ? colors.preto.padrao : colors.cinza.claro} />
+                    tabBarIcon: ({focused}) => <Fontisto name="arrow-swap" style={{transform: [{rotateY: '180deg'}]}} size={28} color={focused ? colors.preto.padrao : colors.cinza.claro} />
                 }} 
             />
             <Tabs.Screen 
