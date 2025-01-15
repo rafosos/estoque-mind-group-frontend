@@ -13,11 +13,17 @@ Para melhor compatibilidade, o app deverá seu utilizado em dispositivos Android
    ```bash
    npm install
    ```
+2. Criar o arquivo .env e colocar a URL do servidor backend, como no arquivo abaixo:
 
-2. Iniciar o servidor
+```
+EXPO_PUBLIC_IP_SERVIDOR=http://192.168.xxx.xx:3000 //substituir pelo IP correto
+EXPO_PUBLIC_IP_SERVIDOR_WEB=http://localhost:3000 //substituir por outro IP, caso o frontend Web não seja na mesma máquina do servidor
+```
+
+3. Iniciar o servidor
 
    ```bash
     npx expo start
    ```
 
-3. No dispositivo móvel, instalar o app Expo Go e escanear o QR Code gerado no console.
+4. No dispositivo móvel, instalar o app Expo Go e escanear o QR Code gerado no console.
