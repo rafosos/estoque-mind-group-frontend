@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { Platform } from "react-native";
 import { useToast } from "react-native-toast-notifications";
 
-const API_URL = Platform.OS == "web" ? "http://localhost:3000" : 'http://192.168.0.18:3000'; //casa
+const API_URL = Platform.OS == "web" ? process.env.IP_SERVIDOR_WEB : process.env.IP_SERVIDOR;
 
 export const axiosInstance = axios.create({
     baseURL: API_URL,
@@ -22,12 +22,6 @@ axiosInstance.interceptors.request.use(async function (config){
     config.headers['Authorization'] = "Bearer " + token;
     return config;
 });
-
-// axiosInstance.interceptors.response.use((config) => config, (error) => {
-//     const toast = useToast();
-//     toast.show(error, {type: "error"});
-//     return Promise.reject(error)
-// })
 
 const get = <T extends unknown>(endpoint: string, params: any = {}) => 
     axiosInstance.get<T>(endpoint, {params});
