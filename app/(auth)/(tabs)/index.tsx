@@ -8,6 +8,8 @@ import { useEffect, useState } from "react";
 import { FlatList, Image, RefreshControl, StyleSheet, View } from "react-native";
 import { colors } from '@/constants/Colors';
 import { fonts } from '@/constants/Fonts';
+import { Link } from 'expo-router';
+import { AntDesign } from '@expo/vector-icons';
 
 export default function Index(){
     const {nome} = useSession();
@@ -28,16 +30,7 @@ export default function Index(){
             .finally(() => setRefreshing(false));
     }
 
-    const getImage = (imageBlob: Blob | undefined) => {
-        // if (!imageBlob) return;
-        // // const reader = new FileReader();
-        // console.log()
-        // // reader.readAsDataURL(imageBlob);
-        // console.log("oiii2")
-        return `data:image/jpeg;base64,` + arrayBufferToBase64(imageBlob.data);
-    }
-
-    const arrayBufferToBase64 = (buffer: Buffer) => {
+    const arrayBufferToBase64 = (buffer: any) => {
         let binary = '';
         let bytes = new Uint8Array(buffer);
         let len = bytes.byteLength;
@@ -50,23 +43,41 @@ export default function Index(){
     return (    
         <FlatList 
             contentContainerStyle={styles.container}
+            columnWrapperStyle={styles.columnWrapper}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={getProdutos}/>}
             data={produtos}
             numColumns={2}
             ListHeaderComponent={<>
                 <StyledText style={styles.greetings}>Olá, {nome}</StyledText>
-                <StyledText>Seus produtos:</StyledText>
+                <StyledText style={styles.seusProdutos}>Seus produtos:</StyledText>
             </>}
+            ListHeaderComponentStyle={styles.containerHeader}
             renderItem={({item}) => 
+                    <View style={styles.containerCardProduto}>
+
                 <View style={styles.cardProduto}>
-                    <Image source={{uri: getImage(item.imagem)}} style={{resizeMode: 'cover', width: 100, height:100}}/>
+                    <Image 
+                        source={item.imagem ?
+                            {uri: 'data:image/jpeg;base64,' + arrayBufferToBase64(item.imagem.data)}
+                            : require('@/assets/images/default-product-img.png')
+                        } 
+                        resizeMode="cover" 
+                        style={styles.imagemCard}
+                    />
                     <StyledText style={styles.nomeProduto}>{item.nome}</StyledText>
-                    <StyledText style={styles.descricaoProduto}>{item.descricao}</StyledText>
                     <StyledText style={styles.qtdProduto}>Em estoque: {item.quantidade}</StyledText>
+                    <StyledText numberOfLines={2} style={styles.descricaoProduto}>{item.descricao}</StyledText>
+                            </View>
                 </View>
             }
-            // TODO:
-            // ListEmptyComponent={<></>}
+            ListEmptyComponent={
+                <View style={styles.listEmptyContainer}>
+                    <Link href="/(auth)/(tabs)/add_produto" style={styles.txtListEmpty}>
+                        Parece que você não tem produtos cadastrados ainda... Você pode cadastrar um agora clicando aqui!
+                        {"\n\n"}<AntDesign name="plussquare" size={28} color={colors.cinza.escuro} />
+                    </Link>
+                </View>
+            }
         />
     )
 }
@@ -74,27 +85,59 @@ export default function Index(){
 const styles = StyleSheet.create({
     container:{
         paddingHorizontal: 10,
-        paddingVertical: 20
+        paddingVertical: 20,
+        gap: 10,
+        flex: 1
+    },
+    containerHeader:{
+    },
+    columnWrapper:{
+        // gap:20
     },
     greetings:{
-        fontSize: 25
+        fontSize: 25,
+        fontFamily: fonts.padrao.SemiBold600
+    },
+    seusProdutos:{
+        marginTop:25,
+        fontSize: 17,
+        marginBottom:15
+    },
+    containerCardProduto:{
+        paddingHorizontal: 5,
+        maxWidth: '50%',
+        flex: 1/2,
     },
     cardProduto:{
         borderWidth: 1,
-        borderColor: colors.cinza.escuro,
+        borderColor: colors.cinza.medio2,
         borderRadius: 15,
         padding: 5,
-        margin: 3
+        height: 250,
+        overflow: 'hidden'
+    },
+    imagemCard:{
+        borderRadius: 15,
+        width: '100%',
+        height: '65%'
     },
     nomeProduto:{
         fontSize: 15,
         fontFamily: fonts.padrao.SemiBold600
     },
     descricaoProduto:{
-
+        color: colors.cinza.medio2,
     },
     qtdProduto:{
-        textAlign: 'center',
         fontSize: 15
+    },
+    listEmptyContainer:{
+        alignItems: 'center',
+        justifyContent: 'center',
+        flex: 1,
+        padding: 50
+    },
+    txtListEmpty:{
+        textAlign: 'center',
     }
 });
