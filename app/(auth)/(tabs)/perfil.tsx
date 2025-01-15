@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSession } from "@/app/ctx";
 import StyledText from "@/components/styled/StyledText";
-import { errorHandlerDebug } from "@/services/service_base";
+import { errorHandler } from "@/services/service_base";
 import { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { colors } from '@/constants/Colors';
@@ -29,7 +29,7 @@ export default function perfil(){
         setLoading(true);
         userService.getUser()
             .then(res => setUser(res))
-            .catch(err => errorHandlerDebug(err))
+            .catch(err => errorHandler(err))
             .finally(() => setLoading(false));
     }
 

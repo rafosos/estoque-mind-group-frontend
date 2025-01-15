@@ -3,7 +3,7 @@ import { useSession } from "@/app/ctx";
 import { Produto } from "@/classes/produto";
 import StyledText from "@/components/styled/StyledText";
 import ProdutoService from "@/services/produto_service";
-import { errorHandlerDebug } from "@/services/service_base";
+import { errorHandler } from "@/services/service_base";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Image, RefreshControl, StyleSheet, TouchableOpacity, View } from "react-native";
 import { colors } from '@/constants/Colors';
@@ -43,7 +43,7 @@ export default function Index(){
     const getProdutos = async () => {
         return await produtoService.getAll()
             .then(res => setProdutos(res))
-            .catch(err => errorHandlerDebug(err))
+            .catch(err => errorHandler(err))
             .finally(() => setRefreshing(false));
     }
     

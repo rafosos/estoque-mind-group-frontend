@@ -10,7 +10,7 @@ import { fonts } from "@/constants/Fonts";
 import { AutocompleteDropdown, AutocompleteDropdownItem, IAutocompleteDropdownRef } from "react-native-autocomplete-dropdown";
 import { useRef, useState } from "react";
 import { ProdutoResultado } from "@/classes/produto";
-import { errorHandlerDebug } from "@/services/service_base";
+import { errorHandler } from "@/services/service_base";
 import StyledTextInput from "@/components/styled/StyledTextInput";
 import { arrayBufferToBase64 } from '@/utils/arrayBufferToBase64';
 import { useToast } from 'react-native-toast-notifications';
@@ -47,7 +47,7 @@ export default function AddMovimento() {
                 });
                 setResultados(prods);
             })
-            .catch(err => errorHandlerDebug(err))
+            .catch(err => errorHandler(err))
             .finally(() => setLoading(false));
     }
 
@@ -59,7 +59,7 @@ export default function AddMovimento() {
                 toast.show("Estoque atualizado com sucesso.", {type: "success"});
                 limparSair();
             })
-            .catch(err => errorHandlerDebug(err))
+            .catch(err => errorHandler(err))
             .finally(() => setLoading(false));
     }
     

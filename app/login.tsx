@@ -8,7 +8,7 @@ import StyledTextInput from "@/components/styled/StyledTextInput";
 import { colors } from "@/constants/Colors";
 import { fonts } from "@/constants/Fonts";
 import ErroInput from "@/components/ErroInput";
-import { errorHandlerDebug } from "@/services/service_base";
+import { errorHandler } from "@/services/service_base";
 import AuthService from "@/services/auth_service";
 
 export default function Login() {
@@ -46,7 +46,7 @@ export default function Login() {
                 }
             })
             .catch(err => {
-                errorHandlerDebug(err);
+                errorHandler(err);
                 if(err.response && err.response.status == 401)
                     setErros({...erroObj, geral: `Login e senha inválidos ou incompatíveis, cheque as informações e tente novamente.`});
                 else if(err.message == "Network Error") //server is down

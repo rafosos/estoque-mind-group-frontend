@@ -6,7 +6,7 @@ import { colors } from "@/constants/Colors";
 import { fonts } from "@/constants/Fonts";
 import ProdutoService from "@/services/produto_service";
 import { useToast } from "react-native-toast-notifications";
-import { errorHandlerDebug } from "@/services/service_base";
+import { errorHandler } from "@/services/service_base";
 import ErroInput from "@/components/ErroInput";
 import * as ImagePicker from 'expo-image-picker';
 import { router, useLocalSearchParams } from "expo-router";
@@ -54,7 +54,7 @@ export default function AddProduto(){
                     setImagem(arrayBufferToBase64(res.imagem.data));
                 }
             })
-            .catch(err => errorHandlerDebug(err))
+            .catch(err => errorHandler(err))
             .finally(() => setLoading(false));
     }
 
@@ -107,7 +107,7 @@ export default function AddProduto(){
                     toast.show("Produto editado com sucesso.", {type: 'success'});
                     limparEFechar();
                 })
-                .catch(err => errorHandlerDebug(err))
+                .catch(err => errorHandler(err))
                 .finally(() => setLoading(false));
         }else{
             produtoService.adicionarProduto(nome, descricao, Number(valor.replace(",", ".")), quantidade, imagem)
@@ -115,7 +115,7 @@ export default function AddProduto(){
                 toast.show("Produto adicionado com sucesso.", {type: 'success'});
                 limparEFechar();
             })
-            .catch(err => errorHandlerDebug(err))
+            .catch(err => errorHandler(err))
             .finally(() => setLoading(false));
         }
     }
@@ -142,7 +142,7 @@ export default function AddProduto(){
         setLoading(true);
         produtoService.deletarProduto(Number(id))
             .then(res => limparEFechar())
-            .catch(err => errorHandlerDebug(err))
+            .catch(err => errorHandler(err))
             .finally(() => setLoading(false));
     }
 
