@@ -19,3 +19,19 @@ export interface BufferObject {
     type: 'Buffer';
     data: number[];
 }  
+
+export class ProdutoResultado {
+    constructor(id: number, nome: string, quantidade: number, valor: number){
+        this.id = id;
+        this.nome = nome;
+        this.quantidade = quantidade;
+        this.valor = valor;
+    }
+
+    id: number;
+    nome: string;
+    quantidade: number;
+    movimentacao: number = 0;
+    valor: number;
+    imagem: BufferObject | undefined;
+}

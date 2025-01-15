@@ -5,8 +5,8 @@ import { fonts } from "@/constants/Fonts";
 import { router } from "expo-router";
 import { Fontisto } from "@expo/vector-icons";
 
-enum TipoMovimento{
-    Entrada, Saida
+export enum TipoMovimento{
+    entrada, saida
 }
 
 export default function Movimento(){
@@ -17,12 +17,12 @@ export default function Movimento(){
     
     return(
         <View style={styles.container}>
-            <TouchableOpacity onPress={() => abrirAddMovimento(TipoMovimento.Entrada)} style={styles.botaoSalvar}>
+            <TouchableOpacity onPress={() => abrirAddMovimento(TipoMovimento.entrada)} style={styles.botaoSalvar}>
                 <StyledText style={styles.txtBotaoSalvar}>Adicionar entrada</StyledText>
                 <Fontisto name="arrow-up-l" size={24} color="black" />
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => abrirAddMovimento(TipoMovimento.Saida)} style={styles.botaoSalvar}>
+            <TouchableOpacity onPress={() => abrirAddMovimento(TipoMovimento.saida)} style={styles.botaoSalvar}>
                 <StyledText style={styles.txtBotaoSalvar}>Adicionar saída</StyledText>
                 <Fontisto name="arrow-down-l" size={24} color="black" />
             </TouchableOpacity>

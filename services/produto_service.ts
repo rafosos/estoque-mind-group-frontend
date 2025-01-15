@@ -1,5 +1,5 @@
-import { deletar, get, post, put } from "./service_base";
-import { Produto, ProdutoModel } from "@/classes/produto";
+import { deletar, get, patch, post, put } from "./service_base";
+import { Produto, ProdutoModel, ProdutoResultado } from "@/classes/produto";
 
 export default function ProdutoService(){
     const prefix = "/produto";
@@ -67,6 +67,17 @@ export default function ProdutoService(){
         const promise = get<Produto[]>(prefix + "/");
         return promise.then(res => res.data);
     }
+    
+    const getProdutosFiltro = (filtro: string, idsEscolhidos: number[]) => {
+        const promise = get<ProdutoResultado[]>(prefix + "/filtro/" + filtro, {idsEscolhidos});
+        return promise.then(res => res.data);    
+    }
+    
+    const addMovimentacao = (produtos: ProdutoResultado[]) => {
+        const prods = produtos.map(p => {return {id: p.id, quantidade: p.quantidade}});
+        const promise = patch<ProdutoResultado[]>(prefix + "/movimentacao", {produtos: prods});
+        return promise.then(res => res.data);        
+    }
 
-    return {adicionarProduto, getProduto, editarProduto, deletarProduto, getAll}
+    return {adicionarProduto, addMovimentacao, getProdutosFiltro, getProduto, editarProduto, deletarProduto, getAll}
 }

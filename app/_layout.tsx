@@ -13,8 +13,7 @@ import { useFonts,
   Inter_900Black,
  } from "@expo-google-fonts/inter";
 import { ToastProvider } from "react-native-toast-notifications";
-import { Platform, StatusBar, StyleSheet } from "react-native";
-import { colors } from "@/constants/Colors";
+import { AutocompleteDropdownContextProvider } from "react-native-autocomplete-dropdown";
 
 export const unstable_settings = {
   initialRouteName: 'login'
@@ -36,19 +35,21 @@ export default function RootLayout() {
 
   return (
     <ToastProvider>
-      <SessionProvider>
-        <Stack screenOptions={{headerShown: false}}>
-          {session?
-            <Stack.Screen name="(auth)" />
-            :
-            <>
-            <Stack.Screen name="login" />
-            <Stack.Screen name="cadastro" />
-            <Stack.Screen name="+not-found" />
-            </>
-          }
-        </Stack>
-      </SessionProvider>
+      <AutocompleteDropdownContextProvider>
+        <SessionProvider>
+          <Stack screenOptions={{headerShown: false}}>
+            {session?
+              <Stack.Screen name="(auth)" />
+              :
+              <>
+              <Stack.Screen name="login" />
+              <Stack.Screen name="cadastro" />
+              <Stack.Screen name="+not-found" />
+              </>
+            }
+          </Stack>
+        </SessionProvider>
+      </AutocompleteDropdownContextProvider>
     </ToastProvider>
   );
 }

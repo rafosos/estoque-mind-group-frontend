@@ -124,10 +124,10 @@ export default function AddProduto(){
         !nome || quantidade < 0 || loading;
 
     const updateQtdMenos = () =>
-        setQuantidade((prev) => prev && prev > 0 ? prev - 1 : 0);
+        setQuantidade((prev) => prev > 0 ? prev - 1 : 0);
 
-    const updateQtdMais = () =>
-        setQuantidade((prev) => prev && prev > 0 ? prev + 1 : 1);
+    const updateQtdMais = () => 
+        setQuantidade((prev) => prev + 1);
 
     const setCurrencyInput = (txt: string) => {
         txt = txt.replace(".", ",");
