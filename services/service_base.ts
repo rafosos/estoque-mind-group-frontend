@@ -45,24 +45,11 @@ const patch = <T extends unknown>(endpoint: string, params: any = {}) =>
     axiosInstance.patch<T>(API_URL + endpoint, params);
 
 
-const errorHandlerDebug = (error: any) => {
-    console.log("\n\nerror.toJson:  ################################################################################")
-    console.log(error.toJSON())
-    if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log("error.response:  #############################################################################")
-        console.log(error.response.data);
-        console.log(error.response.status);
-        console.log(error.response.headers);
-    } 
-    if (error.request) {
-        console.log("error.request:   #########################################################################")
-        console.log(error.request);
-    }
-    console.log('Error.message: ', error.message);
-    console.log("error.config: ", error.config);
+const errorHandler = (error: any) => {
+    const toast = useToast();
+    toast.show(error.message, {type: "error"});
+    console.log(error)
 }
 
 
-export {get, post, put, deletar, errorHandlerDebug, patch}
+export {get, post, put, deletar, errorHandler, patch}
