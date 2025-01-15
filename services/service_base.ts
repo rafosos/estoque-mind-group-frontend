@@ -3,7 +3,7 @@ import axios, { AxiosRequestConfig } from "axios";
 import { Platform } from "react-native";
 import { useToast } from "react-native-toast-notifications";
 
-const API_URL = Platform.OS == "web" ? process.env.IP_SERVIDOR_WEB : process.env.IP_SERVIDOR;
+const API_URL = Platform.OS == "web" ? process.env.EXPO_PUBLIC_IP_SERVIDOR_WEB : process.env.EXPO_PUBLIC_IP_SERVIDOR
 
 export const axiosInstance = axios.create({
     baseURL: API_URL,
